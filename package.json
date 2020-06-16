@@ -1,0 +1,38 @@
+{
+  "name": "dev.bullrich.package-updater",
+  "version": "1.0.0",
+  "displayName": "Package Updater",
+  "description": "Utility to update several packages at once",
+  "unity": "2018.4",
+  "unityRelease": "8f1",
+  "keywords": [
+    "package",
+    "update",
+    "maintenance",
+    "unity"
+  ],
+  "homepage": "https://github.com/Bullrich/UnityPackageUpdater/",
+  "bugs": {
+    "url": "https://github.com/Bullrich/UnityPackageUpdater/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:Bullrich/UnityPackageUpdater.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Javier Bullrich",
+    "email": "javier@bullrich.dev",
+    "url": "https://bullrich.dev"
+  },
+  "files": [
+    "*.md",
+    "*.meta",
+    "*.asmdef",
+    "*.cs",
+    "JsonWrapper"
+  ],
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "2.0.0"
+  }
+}
