@@ -8,7 +8,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace Halodi.PackageCreator
+namespace PackageUpdater
 {
     internal class UnityPackageUpdater : EditorWindow
     {
@@ -48,7 +48,12 @@ namespace Halodi.PackageCreator
 
             if (packagesToUpdate == null)
             {
-                GUILayout.Label("Fetching packages!", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox("Fetching packages!", MessageType.Info);
+                return;
+            }
+            else if (packagesToUpdate.Count == 0)
+            {
+                GUILayout.Label("All packages are up to date!", EditorStyles.boldLabel);
                 return;
             }
 
@@ -66,23 +71,25 @@ namespace Halodi.PackageCreator
             {
                 UpdatePackages(packagesToUpdate.Where(ptu => ptu.Value).Select(ptu => ptu.Key).ToList());
             }
+
             EditorGUI.EndDisabledGroup();
         }
 
         private void PackagesFetched(PackageCollection collection)
         {
             packagesToUpdate = new Dictionary<PackageUpdateInformation, bool>();
-            foreach (var pi in collection)
+            foreach (var packageInfo in collection)
             {
-                if (pi.source == PackageSource.Registry && pi.version != pi.versions.latestCompatible)
+                if (packageInfo.source == PackageSource.Registry &&
+                    packageInfo.version != packageInfo.versions.latestCompatible)
                 {
-                    if (!pi.versions.latestCompatible.Contains("preview"))
+                    if (!packageInfo.versions.latestCompatible.Contains("preview"))
                     {
-                        packagesToUpdate.Add(new PackageUpdateInformation(pi), true);
+                        packagesToUpdate.Add(new PackageUpdateInformation(packageInfo), true);
                     }
-                    else if (pi.version.Contains("preview"))
+                    else if (packageInfo.version.Contains("preview"))
                     {
-                        packagesToUpdate.Add(new PackageUpdateInformation(pi), false);
+                        packagesToUpdate.Add(new PackageUpdateInformation(packageInfo), false);
                     }
                 }
             }
@@ -95,7 +102,6 @@ namespace Halodi.PackageCreator
             var manifest = Path.Combine(project.FullName, "Packages/manifest.json");
             var manifestJson = File.ReadAllText(manifest);
             var manifestObject = parser.Parse(manifestJson);
-            Debug.Log("Manifest before: " + manifestJson);
             var dependencies = manifestObject.Get<JsonDictionary>("dependencies");
 
             foreach (var package in updates)
@@ -104,8 +110,6 @@ namespace Halodi.PackageCreator
             }
 
             var updatedManifest = parser.Serialize(manifestObject);
-
-            Debug.Log("Manifest after: " + updatedManifest);
             Debug.Log(GenerateUpdateText(updates));
             File.WriteAllText(manifest, updatedManifest);
             var window = (UnityPackageUpdater) GetWindow(typeof(UnityPackageUpdater), false, "Package Updater");
@@ -118,13 +122,13 @@ namespace Halodi.PackageCreator
             var log = "Updating the following packages:\n";
             foreach (var package in updates)
             {
-                log += $"{package.PackageName}: {package.CurrentVersion} -> {package.NewVersion}";
+                log += $"{package.PackageName}: {package.CurrentVersion} -> {package.NewVersion}\n";
             }
 
             return log;
         }
 
-        private struct PackageUpdateInformation
+        private readonly struct PackageUpdateInformation
         {
             public readonly string CurrentVersion;
             public readonly string NewVersion;
