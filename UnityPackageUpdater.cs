@@ -61,10 +61,12 @@ namespace Halodi.PackageCreator
                 packagesToUpdate[package] = EditorGUILayout.ToggleLeft(updateLabel, packagesToUpdate[package]);
             }
 
+            EditorGUI.BeginDisabledGroup(packagesToUpdate.Values.ToList().All(v => !v));
             if (GUILayout.Button("Update packages"))
             {
                 UpdatePackages(packagesToUpdate.Where(ptu => ptu.Value).Select(ptu => ptu.Key).ToList());
             }
+            EditorGUI.EndDisabledGroup();
         }
 
         private void PackagesFetched(PackageCollection collection)
