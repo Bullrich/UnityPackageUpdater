@@ -1,7 +1,11 @@
 {
-    "name": "PackageUpdater",
-    "references": [],
-    "optionalUnityReferences": [],
+    "name": "PackageUpdater.Tests",
+    "references": [
+        "PackageUpdater"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "includePlatforms": [
         "Editor"
     ],

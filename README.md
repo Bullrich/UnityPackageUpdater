@@ -47,6 +47,36 @@ You can install this package using [OpenUPM](https://openupm.com/)'s command lin
   ```
 * Switch back to the Unity software and wait for it to finish importing the added package.
 
+### Add editor test
+
+If you want to ensure that all packages are always up to date, you can add the unit tests which 
+ensures that there is no update available.
+
+If you want to add this test to your project you can add it following this steps:
+
+* Navigate to the `Packages` directory of your project.
+* Adjust the [project manifest file][Project-Manifest] `manifest.json` in a text editor.
+  * Ensure `dev.bullrich.package-updater` is part of `testables`.
+
+  A minimal example ends up looking like this.
+  ```json
+  {
+    "scopedRegistries": [
+      ...
+    ],
+    "testables": [
+      "dev.bullrich.package-updater"
+    ],
+    "dependencies": {
+      ...
+    }
+  }
+  ```
+
+* In the Unity software select `Main Menu -> Window -> Test Runner`.
+* Within the Test Runner window click on the `EditMode` tab and the click `Run All` button.
+* If all the tests pass then the installation was successful.
+
 [Project-Manifest]: https://docs.unity3d.com/Manual/upm-manifestPrj.html
 [OpenUPM]: https://openupm.com/packages/dev.bullrich.package-updater/
 [Enable-Tests]: https://docs.unity3d.com/Manual/cus-tests.html

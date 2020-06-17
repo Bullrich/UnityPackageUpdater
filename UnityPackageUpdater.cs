@@ -10,11 +10,9 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace PackageUpdater
 {
-    internal class UnityPackageUpdater : EditorWindow
+    public class UnityPackageUpdater : EditorWindow
     {
-        private delegate void ListAction(PackageCollection collection, bool blocking);
-
-        private static ListRequest listRequest;
+        private ListRequest listRequest;
         private Dictionary<PackageUpdateInformation, bool> packagesToUpdate;
 
         [MenuItem("Window/Tools/Update Packages")]
@@ -37,7 +35,7 @@ namespace PackageUpdater
                 EditorApplication.update -= UpdateRequest;
                 if (listRequest != null && listRequest.Status == StatusCode.Success)
                 {
-                    PackagesFetched(listRequest.Result);
+                    packagesToUpdate = PackagesFetched(listRequest.Result);
                 }
             }
         }
@@ -75,9 +73,9 @@ namespace PackageUpdater
             EditorGUI.EndDisabledGroup();
         }
 
-        private void PackagesFetched(PackageCollection collection)
+        public static Dictionary<PackageUpdateInformation, bool> PackagesFetched(PackageCollection collection)
         {
-            packagesToUpdate = new Dictionary<PackageUpdateInformation, bool>();
+            var availableUpdates = new Dictionary<PackageUpdateInformation, bool>();
             foreach (var packageInfo in collection)
             {
                 if (packageInfo.source == PackageSource.Registry &&
@@ -85,14 +83,16 @@ namespace PackageUpdater
                 {
                     if (!packageInfo.versions.latestCompatible.Contains("preview"))
                     {
-                        packagesToUpdate.Add(new PackageUpdateInformation(packageInfo), true);
+                        availableUpdates.Add(new PackageUpdateInformation(packageInfo), true);
                     }
                     else if (packageInfo.version.Contains("preview"))
                     {
-                        packagesToUpdate.Add(new PackageUpdateInformation(packageInfo), false);
+                        availableUpdates.Add(new PackageUpdateInformation(packageInfo), false);
                     }
                 }
             }
+
+            return availableUpdates;
         }
 
         private static void UpdatePackages(IReadOnlyList<PackageUpdateInformation> updates)
@@ -128,7 +128,7 @@ namespace PackageUpdater
             return log;
         }
 
-        private readonly struct PackageUpdateInformation
+        public readonly struct PackageUpdateInformation
         {
             public readonly string CurrentVersion;
             public readonly string NewVersion;
